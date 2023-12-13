@@ -1,0 +1,177 @@
+<script>
+function add_class(){
+
+var name=document.getElementById("class_name").value;
+var capacity=document.getElementById("capacity").value;
+
+
+
+var formData = {
+      name: name,
+      capacity:capacity
+    };
+    var url="./api/add_class.php";
+    console.log(url);
+    $.ajax({
+      type: "POST",
+      url:url,  
+      data: formData,
+      dataType: "json",
+      success: function(response) {
+        console.log(response)
+        if (response.status === "success") {
+            location.reload();
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(errorThrown)
+        // Display an error message in case of AJAX failure
+        $("#responseMsg").text("AJAX Error: " + errorThrown);
+      }
+    });
+
+
+}
+
+function get_classes(){
+    var url="./api/get_classes.php";
+    $.ajax({
+      type: "GET",
+      url:url,  
+      data: {},
+      dataType: "json",
+      success: function(response) {
+        console.log(response)
+        var classes=response.classes;
+        for(var i=0;i<classes.length;i++){
+            console.log(classes[i]);
+            var coldiv=document.createElement("div");
+            coldiv.setAttribute("class","col-md-4");
+            coldiv.classList.add("class_div");
+
+            coldiv.innerHTML="Name => "+classes[i]["code"];
+
+            var par=document.createElement("p");
+            par.innerHTML="capacity => "+classes[i]["cap"];
+
+            coldiv.appendChild(par);
+
+
+            var btndelete=document.createElement("button");
+            btndelete.innerHTML="delete"
+            btndelete.setAttribute("id",classes[i]["id"]);
+            btndelete.setAttribute("class","btn btn-danger");
+            btndelete.setAttribute("onclick","deleteclass(this)");
+
+
+            coldiv.appendChild(btndelete);
+
+            var btnedit=document.createElement("button");
+            btnedit.innerHTML="edit"
+            btnedit.setAttribute("id",classes[i]["id"]);
+            btnedit.setAttribute("class","btn btn-primary");
+
+            coldiv.appendChild(btnedit);
+            document.getElementById("data").appendChild(coldiv);
+
+        }
+        
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(errorThrown)
+        
+      }
+    });
+
+}
+function deleteclass(obj){
+  let text = "Press a button!\nEither OK or Cancel.";
+  if (confirm(text) == true) {
+  
+  
+
+var id=obj.id
+
+
+var formData = {
+      id: id
+    };
+    var url="./api/delete_class.php";
+    console.log(url);
+    $.ajax({
+      type: "POST",
+      url:url,  
+      data: formData,
+      dataType: "json",
+      success: function(response) {
+        console.log(response)
+        if (response.status === "success") {
+            location.reload();
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(errorThrown)
+        // Display an error message in case of AJAX failure
+        $("#responseMsg").text("AJAX Error: " + errorThrown);
+      }
+    })}
+    else {
+    text = "You canceled!";
+  };
+
+
+}
+document.addEventListener("DOMContentLoaded", () => {
+  get_classes();
+});
+function deleteclicked(obj){
+  alert(obj.id)
+}
+</script>
+<div class="modal" id="add_class">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Modal Heading</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+                <div class="row">
+                    <input type="text" id="class_name" class="form-control" placeholder="write the name of classe"/>
+                    <br>
+                    <label>capacity</label>
+                    <input type="number" id="capacity" class="form-control" />
+                    <button onclick="add_class()" class="btn btn-primary form-control">Add Classe</button>
+                </div>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_class">
+    Open modal
+  </button>
+
+<div class="container" >
+  <div class="row" id="data">
+
+  </div>
+</div>
+<style>
+  .class_div{ padding: 15px;
+    background: #34417171;
+    border-radius: 15px;
+    color:#fff;
+    margin: 10px;
+}
+</style>
+
